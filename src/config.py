@@ -117,11 +117,9 @@ OVERPASS_ROUNDS = 3
 OVERPASS_ROUND_WAIT = 60
 # Floor on a reply's element count. A regional instance answers an
 # out-of-region bbox with a valid EMPTY result, and taking that at face value
-# reports every City building as missing from OSM. NOT yet measured against a
-# full live reply: a partial, stale sample on 2026-10-08 already held 29,849
-# buildings in 11 of 16 sub-boxes of the bbox. Raise this to about half the
-# real count after the first live run.
-OSM_MIN_ELEMENTS = 20000
+# reports every City building as missing from OSM. About half the first live
+# reply: 49,695 elements from overpass-api.de on 2026-10-09.
+OSM_MIN_ELEMENTS = 25000
 OSM_MAX_AGE_DAYS = 3
 # Overpass rejects the default requests User-Agent (HTTP 406); identify the tool.
 USER_AGENT = "guelph-buildings-layer/0.1 (toronto@comentality.com)"

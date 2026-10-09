@@ -80,9 +80,9 @@ mapped after the sample was taken.
 
 The Overpass handling (mirror list, retries, refusing stale or implausibly
 small replies, the cache fallback, exit code 70) is the parks layer's,
-unchanged; its README explains each piece. One number is still a guess:
-`OSM_MIN_ELEMENTS` in [`src/config.py`](src/config.py) is set at 20,000 and
-should be raised to about half the real reply after the first live run.
+unchanged; its README explains each piece. `OSM_MIN_ELEMENTS` in
+[`src/config.py`](src/config.py) is 25,000, about half the first live reply
+(49,695 elements on 2026-10-09).
 
 The parks layer can reconstruct its gap history from Overpass attic queries;
 this one has no `backfill` command. An attic query for every building in the
