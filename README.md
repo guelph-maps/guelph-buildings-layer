@@ -39,6 +39,10 @@ layer says so itself: every row carries a `SOURCE`, and 38,621 of 38,944
   - **site plan** &mdash; the same, for an outline drawn from a plan: check it
     has been built before adding it.
 
+  Each row links to openstreetmap.org, iD and JOSM (<kbd>O</kbd>, <kbd>I</kbd>,
+  <kbd>J</kbd> for the selected row); the JOSM link needs JOSM running with
+  Preferences &rarr; Remote Control enabled.
+
   Its [history page](https://guelph-maps.github.io/guelph-buildings-layer/gaps/history.html)
   charts those counts, one point per weekly run.
 

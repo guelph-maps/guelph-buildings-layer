@@ -15,6 +15,8 @@
   var highlight = null;  // outline of the currently selected gap
   var selectedRow = null;
   var selectedIndex = null;  // feature index of the current selection
+  var JOSM = "http://127.0.0.1:8111/load_and_zoom";
+  var PAD_M = 30;  // metres of padding around a gap for the JOSM download box
 
   function init() {
     var el = document.getElementById("gap-map");
@@ -111,7 +113,8 @@
   }
 
   // Where to send the user for a gap: the openstreetmap.org view and the iD
-  // editor, centred on the building. A gap has no OSM object to point at.
+  // editor, centred on the building, and JOSM remote control. A gap has no
+  // OSM object to point at.
   function osmTargets(f) {
     var c = f._center;
     if (!c) { return null; }
@@ -119,17 +122,41 @@
     return {
       osm: "https://www.openstreetmap.org/#map=19/" + ll,
       id: "https://www.openstreetmap.org/edit#map=20/" + ll,
+      josm: josmUrl(f.geometry.coordinates),
     };
   }
 
-  // "OSM · iD" link pair shared by the table and the popups.
+  // JOSM remote control: download the building's bounds padded PAD_M.
+  function josmUrl(coords) {
+    var s = 90, w = 180, n = -90, e = -180;
+    (function walk(c) {
+      if (typeof c[0] === "number") {
+        s = Math.min(s, c[1]); n = Math.max(n, c[1]);
+        w = Math.min(w, c[0]); e = Math.max(e, c[0]);
+      } else {
+        c.forEach(walk);
+      }
+    })(coords);
+    var dLat = PAD_M / 111320;
+    var dLon = PAD_M / (111320 * Math.cos((s + n) / 2 * Math.PI / 180));
+    return JOSM + "?left=" + (w - dLon).toFixed(6) +
+      "&right=" + (e + dLon).toFixed(6) + "&top=" + (n + dLat).toFixed(6) +
+      "&bottom=" + (s - dLat).toFixed(6) +
+      "&changeset_source=" + encodeURIComponent("City of Guelph Buildings");
+  }
+
+  // "OSM · iD · JOSM" links shared by the table and the popups. JOSM opens as
+  // a plain navigation in one reused tab named "josm", not a fetch: browsers
+  // gate background requests from a public page to localhost, not a click.
   function osmPairHtml(f) {
     var t = osmTargets(f);
     if (!t) { return ""; }
     return '<a href="' + t.osm + '" target="_blank" rel="noopener" ' +
       'title="View on openstreetmap.org (hotkey: O)">OSM</a> &middot; ' +
       '<a href="' + t.id + '" target="_blank" rel="noopener" ' +
-      'title="Open in the iD editor (hotkey: I)">iD</a>';
+      'title="Open in the iD editor (hotkey: I)">iD</a> &middot; ' +
+      '<a href="' + esc(t.josm) + '" class="josm" target="josm" ' +
+      'title="Load this area into JOSM via remote control (hotkey: J)">JOSM</a>';
   }
 
   function label(p) {
@@ -229,17 +256,21 @@
     filter.addEventListener("input", apply);
     apply();
 
-    // O / I open the selected gap on openstreetmap.org / in the iD editor.
+    // O / I / J open the selected gap on openstreetmap.org, in iD or in JOSM.
     document.addEventListener("keydown", function (ev) {
       if (ev.ctrlKey || ev.metaKey || ev.altKey) { return; }
       if (/^(input|textarea|select)$/i.test(ev.target.tagName)) { return; }
       var key = ev.key.toLowerCase();
-      if (key !== "o" && key !== "i") { return; }
+      if (key !== "o" && key !== "i" && key !== "j") { return; }
       if (selectedIndex == null) { return; }
       var t = osmTargets(features[selectedIndex]);
       if (!t) { return; }
       ev.preventDefault();
-      window.open(key === "o" ? t.osm : t.id, "_blank", "noopener");
+      if (key === "j") {
+        window.open(t.josm, "josm");
+      } else {
+        window.open(key === "o" ? t.osm : t.id, "_blank", "noopener");
+      }
     });
   }
 
