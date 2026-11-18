@@ -99,8 +99,10 @@ history starts with the first weekly build.
    ```
    pip install -r requirements.txt
    ```
-   `addressvault` is the local link-gate package the sibling projects share; it
-   is not on PyPI.
+   `addressvault` (the link gate) and
+   [`layerkit`](https://github.com/skfd/layer-kit) (the Overpass, history and
+   publish plumbing) are local packages the sibling projects share; neither is
+   on PyPI, so clone each and `pip install -e` it first.
 2. On Windows, set up WSL2 + tippecanoe once &mdash; see
    [wsl-setup.md](wsl-setup.md). Elsewhere, install tippecanoe (2.49+) and the
    vector step runs it directly.
